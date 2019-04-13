@@ -1,7 +1,10 @@
 package android.wings.websarva.com.intentsample;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -85,5 +88,30 @@ public class MainActivity extends AppCompatActivity {
         SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, menuList, android.R.layout.simple_list_item_2, from, to);
         // Adapterの登録。
         lvMenu.setAdapter(adapter);
+
+        // リストタップのリスナークラス登録。
+        lvMenu.setOnItemClickListener(new ListItemClickListener());
+    }
+
+    /*
+     * リストがタップされたときの処理が記述されたメンバークラス。
+     */
+    private class ListItemClickListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            // タップされた行のデータを取得。SimpleAdapterでは1行分のデータはMap型
+            Map<String, String> item = (Map<String, String>) parent.getItemAtPosition(position);
+            // 定食名と金額を取得
+            String menuName = item.get("name");
+            String menuPrice = item.get("price");
+            // インテントオブジェクトを生成。
+            Intent intent = new Intent(MainActivity.this, MenuThanksActivity.class);
+            // 第2画面に送るデータを格納。
+            intent.putExtra("menuName", menuName);
+            intent.putExtra("menuPrice", menuPrice);
+            // 第2画面の起動。
+            startActivity(intent);
+        }
+
     }
 }
