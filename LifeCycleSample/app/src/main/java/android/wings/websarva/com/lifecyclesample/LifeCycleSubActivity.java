@@ -6,58 +6,56 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
+public class LifeCycleSubActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i("LifeCycleSample", "Main onCreate() called.");
+        Log.i("LifeCycleSample", "Sub onCreate() called.");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_life_cycle_sub);
     }
 
     @Override
     public void onStart() {
-        Log.i("LifeCycleSample", "Main onStart() called.");
+        Log.i("LifeCycleSample", "Sub onStart() called.");
         super.onStart();
     }
 
     @Override
     public void onRestart() {
-        Log.i("LifeCycleSample", "Main onRestart() called.");
+        Log.i("LifeCycleSample", "Sub onRestart() called.");
         super.onRestart();
     }
 
     @Override
     public void onResume() {
-        Log.i("LifeCycleSample", "Main onResume() called.");
+        Log.i("LifeCycleSample", "Sub onResume() called.");
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        Log.i("LifeCycleSample", "Main onPause() called.");
+        Log.i("LifeCycleSample", "Sub onPause() called.");
         super.onPause();
     }
 
     @Override
     public void onStop() {
-        Log.i("LifeCycleSample", "Main onStop() called.");
+        Log.i("LifeCycleSample", "Sub onStop() called.");
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        Log.i("LifeCycleSample", "Main onDestroy() called.");
+        Log.i("LifeCycleSample", "Sub onDestroy() called.");
         super.onDestroy();
     }
 
     /*
-     * [次の画面を表示] ボタンがタップされたときの処理。
+     * [前の画面を表示] ボタンがタップされたときの処理。
      */
     public void onButtonClick(View view) {
-        // インテントオブジェクトを用意。
-        Intent intent = new Intent(MainActivity.this, LifeCycleSubActivity.class);
-        // アクティビティを起動。
-        startActivity(intent);
+        // このアクティビティの終了。
+        finish();
     }
 }
