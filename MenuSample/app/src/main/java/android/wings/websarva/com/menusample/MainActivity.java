@@ -3,6 +3,7 @@ package android.wings.websarva.com.menusample;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         _lvMenu.setAdapter(adapter);
         // リストタップのリスナークラス登録。
         _lvMenu.setOnItemClickListener(new ListItemClickListener());
+
+        registerForContextMenu(_lvMenu);
     }
 
     @Override
@@ -227,5 +230,17 @@ public class MainActivity extends AppCompatActivity {
         _lvMenu.setAdapter(adapter);
         // 親クラスのメソッドを呼び出し、戻り値を返却
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        // 親クラスのメソッド呼び出し
+        super.onCreateContextMenu(menu, view, menuInfo);
+        // メニューのインフレーターの取得
+        MenuInflater inflater = getMenuInflater();
+        // コンテキストメニュー用.xmlファイルをインフレート
+        inflater.inflate(R.menu.menu_context_menu_list, menu);
+        // コンテキストメニューのヘッダタイトルを設定
+        menu.setHeaderTitle(R.string.menu_list_context_header);
     }
 }
