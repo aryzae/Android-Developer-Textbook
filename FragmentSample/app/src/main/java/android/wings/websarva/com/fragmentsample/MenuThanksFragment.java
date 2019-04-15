@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,11 @@ import android.widget.TextView;
  */
 public class MenuThanksFragment extends Fragment {
 
+    /*
+     * 大画面かどうかの判定フラグ
+     * 判定ロジックは同一画面に注文完了表示用FrameLayoutが存在するかで判断
+     */
+    private boolean _isLayoutXLarge = true;
     private Activity _parentActivity;
 
     public MenuThanksFragment() {
@@ -30,6 +37,15 @@ public class MenuThanksFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // 所属するアクティビティの取得
         _parentActivity = getActivity();
+
+        // フラグメントマネージャーの取得
+        FragmentManager manager = getFragmentManager();
+        // フラグメントマネージャーからメニューリストフラグメントを取得
+        MenuListFragment menuListFragment = (MenuListFragment) manager.findFragmentById(R.id.fragmentMenuList);
+        // メニューリストフラグメントの有無で画面判定
+        if (menuListFragment == null) {
+            _isLayoutXLarge = false;
+        }
     }
 
     @Override
@@ -38,10 +54,17 @@ public class MenuThanksFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_menu_thanks, container, false);
 
-        // インテント取得
-        Intent intent = _parentActivity.getIntent();
-        // インテントから引き継ぎデータの取得
-        Bundle extras = intent.getExtras();
+        // Bundleオブジェクト
+        Bundle extras;
+        // 大画面の時
+        if (_isLayoutXLarge) {
+            extras = getArguments();
+        } else {
+            // インテント取得
+            Intent intent = _parentActivity.getIntent();
+            // インテントから引き継ぎデータの取得
+            extras = intent.getExtras();
+        }
 
         // 注文した定食名と金額変数を用意。うまく取得できなかった時のために初期値を設定
         String menuName = "";
@@ -72,7 +95,18 @@ public class MenuThanksFragment extends Fragment {
     private class ButtonClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            _parentActivity.finish();
+            if (_isLayoutXLarge) {
+                // フラグメントマネージャーの取得
+                FragmentManager manager = getFragmentManager();
+                // フラグメントトランザクションの開始
+                FragmentTransaction transaction = manager.beginTransaction();
+                // 自身の削除
+                transaction.remove(MenuThanksFragment.this);
+                // フラグメントトランザクションのコミット
+                transaction.commit();
+            } else {
+                _parentActivity.finish();
+            }
         }
     }
 
