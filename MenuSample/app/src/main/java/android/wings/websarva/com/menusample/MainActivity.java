@@ -3,6 +3,8 @@ package android.wings.websarva.com.menusample;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -38,6 +40,16 @@ public class MainActivity extends AppCompatActivity {
         _lvMenu.setAdapter(adapter);
         // リストタップのリスナークラス登録。
         _lvMenu.setOnItemClickListener(new ListItemClickListener());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // メニューインフレーターの取得
+        MenuInflater inflater = getMenuInflater();
+        // オプションメニュー用.xmlファイルをインフレート
+        inflater.inflate(R.menu.menu_options_menu_list, menu);
+        // 親クラスのメソッドを呼び出し、戻り値を返却
+        return super.onCreateOptionsMenu(menu);
     }
 
     private List<Map<String, Object>> createTeishokuList() {
