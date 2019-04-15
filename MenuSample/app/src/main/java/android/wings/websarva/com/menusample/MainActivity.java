@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -192,19 +193,23 @@ public class MainActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             // タップされた行のデータを取得。SimpleAdapterでは1行分のデータはMap型
             Map<String, Object> item = (Map<String, Object>) parent.getItemAtPosition(position);
-            // 定食名と金額を取得
-            String menuName = (String) item.get("name");
-            Integer menuPrice = (Integer) item.get("price");
-            // インテントオブジェクトを生成。
-            Intent intent = new Intent(MainActivity.this, MenuThanksActivity.class);
-            // 第2画面に送るデータを格納。
-            intent.putExtra("menuName", menuName);
-            // 金額に円を追加
-            intent.putExtra("menuPrice", menuPrice + "円");
-            // 第2画面の起動。
-            startActivity(intent);
+            // 注文処理
+            order(item);
         }
+    }
 
+    private void order(Map<String, Object> menu) {
+        // 定食名と金額を取得
+        String menuName = (String) menu.get("name");
+        Integer menuPrice = (Integer) menu.get("price");
+        // インテントオブジェクトを生成。
+        Intent intent = new Intent(MainActivity.this, MenuThanksActivity.class);
+        // 第2画面に送るデータを格納。
+        intent.putExtra("menuName", menuName);
+        // 金額に円を追加
+        intent.putExtra("menuPrice", menuPrice + "円");
+        // 第2画面の起動。
+        startActivity(intent);
     }
 
     @Override
@@ -242,5 +247,35 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_context_menu_list, menu);
         // コンテキストメニューのヘッダタイトルを設定
         menu.setHeaderTitle(R.string.menu_list_context_header);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        // 長押しされたビューに関する情報が格納されたオブジェクトを取得
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        // 長押しされたリストのポジションを取得
+        int listPosition = info.position;
+        // ポジションから長押しされたメニュー情報Mapオブジェクトを取得
+        Map<String, Object> menu = _menuList.get(listPosition);
+
+        // 選択されたメニューのIDを取得
+        int itemId = item.getItemId();
+        // IDのR値による処理の分岐
+        switch (itemId) {
+            // [説明を表示] メニューが選択されたときの処理。
+            case R.id.menuListContextDesc:
+                // メニューの説明文字列を取得
+                String desc = (String) menu.get("desc");
+                // トーストを表示
+                Toast.makeText(MainActivity.this, desc, Toast.LENGTH_LONG).show();
+                break;
+            // [ご注文]メニューが選択されたときの処理
+            case R.id.menuListContextOrder:
+                // 注文処理
+                order(menu);
+                break;
+        }
+        // 親クラスのメソッドを呼び出し、戻り値を返却
+        return super.onContextItemSelected(item);
     }
 }
