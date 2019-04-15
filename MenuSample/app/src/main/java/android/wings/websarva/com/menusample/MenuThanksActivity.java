@@ -1,8 +1,10 @@
 package android.wings.websarva.com.menusample;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,12 +28,24 @@ public class MenuThanksActivity extends AppCompatActivity {
         // TextViewに定食名と金額を表示。
         tvMenuName.setText(menuName);
         tvMenuPrice.setText(menuPrice);
+
+        // アクションバーを取得
+        ActionBar actionBar = getSupportActionBar();
+        // アクションバーの[戻る]メニューを有効に設定
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     /*
      * 戻るボタンをタップした時の処理。
      */
-    public void onBackButtonClick(View view) {
-        finish();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // 選択されたメニューのIDを取得
+        int itemId = item.getItemId();
+        // 選択されたメニュが[戻る]の場合、アクティビティを終了
+        if (itemId == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
