@@ -96,4 +96,20 @@ public class MainActivity extends AppCompatActivity {
             _btPlay.setText(R.string.bt_play_pause);
         }
     }
+
+    public void onBackButtonClick(View view) {
+        // 再生位置を先頭に
+        _player.seekTo(0);
+    }
+
+    public void onForwardButtonClick(View view) {
+        // 現在再生中のメディアファイルの長さを取得
+        int duration = _player.getDuration();
+        // 再生位置を終端に
+        _player.seekTo(duration);
+        // 再生中出ない時は再生開始
+        if (!_player.isPlaying()) {
+            _player.start();
+        }
+    }
 }
