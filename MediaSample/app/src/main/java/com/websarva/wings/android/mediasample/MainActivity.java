@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import java.io.IOException;
 
@@ -49,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException ex) {
             Log.d("Exception", ex.toString());
         }
+
+        // スイッチを取得
+        Switch loopSwitch = findViewById(R.id.swLoop);
+        // スイッチにリスナーを設定
+        loopSwitch.setOnCheckedChangeListener(new LoopSwitchChangedListener());
     }
 
     @Override
@@ -77,8 +84,10 @@ public class MainActivity extends AppCompatActivity {
     private class PlayerCompletionListener implements  MediaPlayer.OnCompletionListener {
         @Override
         public void onCompletion(MediaPlayer mp) {
-            // 再生ボタンのラベルを"再生"に設定
-            _btPlay.setText(R.string.bt_play_play);
+            // ループ設定がされていない時、再生ボタンのラベルを"再生"に設定
+            if (!_player.isLooping()) {
+                _btPlay.setText(R.string.bt_play_play);
+            }
         }
     }
 
@@ -110,6 +119,14 @@ public class MainActivity extends AppCompatActivity {
         // 再生中出ない時は再生開始
         if (!_player.isPlaying()) {
             _player.start();
+        }
+    }
+
+    private class LoopSwitchChangedListener implements CompoundButton.OnCheckedChangeListener {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            // ループするかどうかを設定
+            _player.setLooping(isChecked);
         }
     }
 }
