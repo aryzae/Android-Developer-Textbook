@@ -1,10 +1,15 @@
 package com.websarva.wings.android.servicesample;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import java.io.IOException;
@@ -17,6 +22,18 @@ public class SoundManageService extends Service {
     public void onCreate() {
         // メディアプレーヤーオブジェクトを生成
         _player = new MediaPlayer();
+        // 通知チャネルのID文字列を用意
+        String id = "soundmanageservice_notification_channel";
+        // 通知チャネル名をstring.xmlから取得
+        String name = getString(R.string.notification_channel_name);
+        // 通知チャネルの重要度を標準に設定
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        // 通知チャネルを生成
+        NotificationChannel channel = new NotificationChannel(id, name, importance);
+        // NotificationManagerオブジェクトを取得
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // 通知チャネルを設定
+        manager.createNotificationChannel(channel);
     }
 
     @Override
@@ -43,11 +60,12 @@ public class SoundManageService extends Service {
 
     @Override
     public void onDestroy() {
-        // プレーヤーが再生中なら停止
+        // プレーヤーが再生中なら停止(Android Oから挙動変更あり https://qiita.com/nukka123/items/791bc4f9043764789ee6 )
         if (_player.isPlaying()) {
             _player.stop();
         }
         // プレーヤー解放
+        _player.reset();
         _player.release();
         _player = null;
     }
@@ -70,6 +88,22 @@ public class SoundManageService extends Service {
     private class PlayerCompletionListener implements  MediaPlayer.OnCompletionListener {
         @Override
         public void onCompletion(MediaPlayer mp) {
+            // Notificationを作成するBuilderクラス生成
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(SoundManageService.this, "soundmanageservice_notification_channel");
+            // 通知エリアに表示されるアイコンの設定
+            builder.setSmallIcon(android.R.drawable.ic_dialog_info);
+            // 通知ドロワーでの表示タイトルを設定
+            builder.setContentTitle(getString(R.string.msg_notification_title_finish));
+            // 通知ドロワーでの表示メッセージを設定
+            builder.setContentText(getString(R.string.msg_notification_text_finish));
+            // BuilderからNotificationオブジェクトを生成
+            Notification notification = builder.build();
+            // NotificationManagerオブジェクトを取得
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            // 通知
+            manager.notify(0, notification);
+
+            // service終了
             stopSelf();
         }
     }
