@@ -1,11 +1,16 @@
 package com.websarva.wings.android.implicitintentsample;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,9 +42,33 @@ public class MainActivity extends AppCompatActivity {
         // LocationManagerオブジェクトを取得
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // 位置情報が更新された際のリスナーオブジェクトを生成
-        GPSLocationListener locationListerner = new GPSLocationListener();
+        GPSLocationListener locationListener = new GPSLocationListener();
         // 位置情報の追跡を開始
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListerner);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // ACCESS_FINE_LOCATIONの許可を求めるダイアログを表示。その際リクエストコードを1000に設定
+            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
+            ActivityCompat.requestPermissions(MainActivity.this, permissions, 1000);
+            // onCreateを終了
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // ACCESS_FINE_LOCATIONに対するパーミッションダイアログの選択で許可したとき
+        if (requestCode == 1000 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // LocationManagerオブジェクトを取得
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            // 位置情報が更新された際のリスナーオブジェクトを生成
+            GPSLocationListener locationListener = new GPSLocationListener();
+            // 再度ACCESS_FINE_LOCATIONの許可を確認
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            // 位置情報の追跡を開始
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        }
     }
 
     public void onMapSearchButtonClick(View view) {
