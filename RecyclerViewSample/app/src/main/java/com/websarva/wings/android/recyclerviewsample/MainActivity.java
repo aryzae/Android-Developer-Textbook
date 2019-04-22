@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -56,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
         RecyclerListAdapter adapter = new RecyclerListAdapter(menuList);
         // RecyclerViewにadapterを設定
         lvMenu.setAdapter(adapter);
+        // 区切り線を生成
+        DividerItemDecoration decorator = new DividerItemDecoration(MainActivity.this, layout.getOrientation());
+        // 区切り線を設定
+        lvMenu.addItemDecoration(decorator);
     }
 
     private List<Map<String, Object>> createTeishokuList() {
@@ -163,8 +169,11 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
             // row.xmlをインフレートし、1行分の画面部品とする
             View view = inflater.inflate(R.layout.row, parent, false);
+            // リスナー設定
+            view.setOnClickListener(new ItemClickListener());
             // ViewHolderオブジェクトを生成
             RecyclerListViewHolder holder = new RecyclerListViewHolder(view);
+
             // 生成したViewHolderを返す
             return holder;
         }
@@ -188,6 +197,20 @@ public class MainActivity extends AppCompatActivity {
         public int getItemCount() {
             // リストデータの件数を返す
             return _listData.size();
+        }
+    }
+
+    private class ItemClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            // タップされたLinearLayout内にあるメニュー名表示TextViewを取得
+            TextView tvMenuName = view.findViewById(R.id.tvMenuName);
+            // メニュー名表示TextViewから表示されているメニュー名を取得
+            String menuName = tvMenuName.getText().toString();
+            // トーストに表示する文字列を生成
+            String msg = getString(R.string.msg_header) + menuName;
+            // トースト表示
+            Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
         }
     }
 }
